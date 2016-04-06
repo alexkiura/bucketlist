@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-
+issues.py
 # Distribution / packaging
 .Python
 env/
@@ -60,3 +60,7 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#imdone-atom files
+notes/
+.imdone/
