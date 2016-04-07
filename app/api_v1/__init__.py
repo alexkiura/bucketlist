@@ -1,5 +1,5 @@
 """This module creates the api BluePrint."""
 
-from flask import BluePrint
+from flask import Blueprint
 
-api = BluePrint('api', __name__)
+api = Blueprint('api', __name__)
