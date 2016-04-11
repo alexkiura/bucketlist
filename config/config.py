@@ -1,4 +1,6 @@
 """This module contains various configuration options."""
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
@@ -11,7 +13,9 @@ class DevConfig(Config):
     """Development configuration."""
 
     DEBUG = True
-    DATABASE_URI = 'sqlite:///dbucketlist.db'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
+        'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
+    # DATABASE_URI = 'sqlite:///dbucketlist.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
