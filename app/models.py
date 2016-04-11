@@ -13,8 +13,8 @@ class BucketListItem(db.Model):
     priority = db.Column(db.String(50))
     done = db.Column(db.Boolean(), default=False, index=True)
     date_created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    # date_modified = db.Column(db.TIMESTAMP, server_default=db.func.now,
-    #                        #   onupdate=db.func.current_timestamp())
+    date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
+                              onupdate=db.func.current_timestamp())
     bucketlist_id = db.Column(db.Integer, db.ForeignKey('bucketlists.id'))
 
     def __repr__(self):
@@ -30,6 +30,7 @@ class BucketList(db.Model):
     list_name = db.Column(db.String(100), unique=True)
     bucketlist_items = db.relationship('BucketListItem', backref='bucketlist')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_by = db.Column(db.Integer)
 
     def __repr__(self):
         """Return a string representation of the bucketlist."""
