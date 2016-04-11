@@ -64,3 +64,6 @@ target/
 #imdone-atom files
 notes/
 .imdone/
+
+#migrations
+migrations/
