@@ -2,7 +2,9 @@
 from . import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
+from config.config import config
 
 class BucketListItem(db.Model):
     """Defines the items in a user's bucketlist."""
@@ -79,6 +81,23 @@ class User(db.Model):
     def password(self, password):
         """Generate and save a hash of <password>."""
         self.password_hash = generate_password_hash(password)
+
+    def generate_auth_token(self, expiration=10000):
+        token_serializer = Serializer(config['SECRET_KEY'],
+                                      expires_in=expiration)
+        return token_serializer.dumps({'id': self.id})
+
+    @staticmethod
+    def verify_auth_token(token):
+        token_serializer = Serializer(config['SECRET_KEY'])
+        try:
+            data = token_serializer.loads(token)
+        except SignatureExpired:
+            return None
+        except BadSignature:
+            return None
+        user = User.query.get(data['id'])
+        return user
 
     def __repr__(self):
         """Return a string representation of the user."""
