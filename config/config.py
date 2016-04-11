@@ -35,5 +35,6 @@ class ProductionConfig(Config):
 config = {
     'development': DevConfig,
     'testing': TestConfig,
-    'Production': ProductionConfig
+    'Production': ProductionConfig,
+    'SECRET_KEY': 'MAKMENDE'
 }
