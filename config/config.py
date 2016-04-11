@@ -12,6 +12,7 @@ class DevConfig(Config):
 
     DEBUG = True
     DATABASE_URI = 'sqlite:///dbucketlist.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 class TestConfig(Config):
