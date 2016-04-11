@@ -4,10 +4,16 @@ from app import flask_app, db
 from app.models import User, BucketList, BucketListItem
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
+from flask.ext.restful import Resource, Api
+from app.api_v1.resources import TestResource
 
 app = flask_app
+api = Api(app=app, prefix='/api/v1.0')
 manager = Manager(app)
 migrate = Migrate(app, db)
+
+# add resources
+api.add_resource(TestResource, '/')
 
 
 def make_shell_context():
