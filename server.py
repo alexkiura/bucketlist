@@ -5,7 +5,7 @@ from app.models import User, BucketList, BucketListItem
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.restful import Resource, Api
-from app.api_v1.resources import TestResource
+from app.api_v1.resources import TestResource, BucketListApi
 
 app = flask_app
 api = Api(app=app, prefix='/api/v1.0')
@@ -14,7 +14,7 @@ migrate = Migrate(app, db)
 
 # add resources
 api.add_resource(TestResource, '/')
-
+api.add_resource(BucketListApi, '/user/<user_id>/bucketlists/')
 
 def make_shell_context():
     """Add app, database and models to the shell."""
