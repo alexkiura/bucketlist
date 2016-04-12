@@ -1,7 +1,7 @@
 """This module contains the resources to be served on the endpoints."""
 from flask.ext.restful import Resource, marshal
-from app.models import BucketList, User
-from serializers import bucketlist_serializer
+from app.models import BucketList, User, BucketListItem
+from serializers import bucketlist_serializer, bucketlistitem_serializer
 from flask import g, jsonify, request
 from flask.ext.httpauth import HTTPBasicAuth
 from flask_restful import reqparse
