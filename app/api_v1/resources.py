@@ -27,12 +27,55 @@ class TestResource(Resource):
         return {'Message': 'Welcome to my api'}
 
 
-class BucketListApi(Resource):
+class BucketListsApi(Resource):
     @auth.login_required
     def get(self):
         bucketlists = BucketList.query.filter_by(created_by=g.user.id).all()
         return {'bucketlists': marshal(bucketlists,
                                        bucketlist_serializer)}
+
+    @auth.login_required
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('list_name')
+        args = parser.parse_args()
+        list_name = args['list_name']
+        if list_name:
+            bucketlist = BucketList(list_name=list_name, created_by=g.user.id,
+                                    user_id=g.user.id)
+            db.session.add(bucketlist)
+            db.session.commit()
+            return jsonify({'message': 'success',
+                            'list_name': bucketlist.list_name})
+        else:
+            return jsonify({'message': 'Failure. Please provide a name for the'
+                            'bucketlist'})
+
+class BucketListApi(Resource):
+    @auth.login_required
+    def get(self, id):
+        bucketlist = BucketList.query.filter_by(created_by=g.user.id,
+                                                id=id).first()
+        return {'bucketlist': marshal(bucketlist, bucketlist_serializer)}
+
+    @auth.login_required
+    def put(self, id):
+        bucketlist = BucketList.query.filter_by(created_by=g.user.id,
+                                                id=id).first()
+        parser = reqparse.RequestParser()
+        parser.add_argument('list_name')
+        args = parser.parse_args()
+        new_list_name = args['list_name']
+        if new_list_name:
+            bucketlist.list_name = new_list_name
+            db.session.add(bucketlist)
+            db.session.commit()
+            return jsonify({'message': 'success',
+                            'list_name': bucketlist.list_name})
+        else:
+            return jsonify({'message': 'Failure. Please provide a name for the'
+                            'bucketlist'})
+
 
 
 class UserLogin(Resource):
