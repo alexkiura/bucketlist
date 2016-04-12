@@ -10,7 +10,7 @@ class BucketListItem(db.Model):
     """Defines the items in a user's bucketlist."""
 
     __tablename__ = "bucketlistitems"
-    id = db.Column(db.Integer, primary_key=True)
+    item_id = db.Column(db.Integer, primary_key=True)
     item_name = db.Column(db.String(256), unique=True)
     priority = db.Column(db.String(50))
     done = db.Column(db.Boolean(), default=False, index=True)
