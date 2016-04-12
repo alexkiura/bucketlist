@@ -56,7 +56,10 @@ class BucketListApi(Resource):
     def get(self, id):
         bucketlist = BucketList.query.filter_by(created_by=g.user.id,
                                                 id=id).first()
-        return {'bucketlist': marshal(bucketlist, bucketlist_serializer)}
+        if bucketlist:
+            return {'bucketlist': marshal(bucketlist, bucketlist_serializer)}
+        else:
+            return jsonify({'message': 'the bucketlist was not found.'})
 
     @auth.login_required
     def put(self, id):
@@ -75,6 +78,17 @@ class BucketListApi(Resource):
         else:
             return jsonify({'message': 'Failure. Please provide a name for the'
                             'bucketlist'})
+
+    @auth.login_required
+    def delete(self, id):
+        bucketlist = BucketList.query.filter_by(created_by=g.user.id,
+                                                id=id).first()
+        if bucketlist:
+            db.session.delete(bucketlist)
+            db.session.commit()
+            return jsonify({'message': 'successfully deleted bucketlist'})
+        else:
+            return jsonify({'message': 'the delete was unsuccessful.'})
 
 
 
