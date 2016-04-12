@@ -30,7 +30,11 @@ class TestResource(Resource):
 class BucketListsApi(Resource):
     @auth.login_required
     def get(self):
-        bucketlists = BucketList.query.filter_by(created_by=g.user.id).all()
+        args = request.args.to_dict()
+        if args:
+            limit = int(args.get('limit'))
+        bucketlists = BucketList.query.\
+            filter_by(created_by=g.user.id).paginate(1, limit, False).items
         return {'bucketlists': marshal(bucketlists,
                                        bucketlist_serializer)}
 
