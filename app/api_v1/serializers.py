@@ -2,7 +2,7 @@
 from flask_restful import fields
 
 bucketlistitem_serializer = {
-    'id': fields.Integer,
+    'item_id': fields.Integer,
     'item_name': fields.String,
     'priority': fields.String,
     'done': fields.Boolean,
