@@ -96,6 +96,83 @@ class BucketListApi(Resource):
 
 
 
+class BucketListItemsApi(Resource):
+
+    @auth.login_required
+    def get(self, id):
+        args = request.args.to_dict()
+        if args:
+            limit = int(args.get('limit'))
+        bucketlistitems = BucketListItem.query.filter_by(bucketlist_id=id).\
+            paginate(1, limit, False).items
+        return jsonify({'items':
+                       marshal(bucketlistitems, bucketlistitem_serializer)})
+
+    @auth.login_required
+    def post(self, id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('item_name')
+        parser.add_argument('priority')
+        args = parser.parse_args()
+        item_name = args['item_name']
+        priority = args['priority']
+        done = False
+
+        if item_name and priority:
+            bucketlistitem = BucketListItem(item_name=item_name,
+                                            priority=priority,
+                                            done=done,
+                                            bucketlist_id=id)
+            db.session.add(bucketlistitem)
+            db.session.commit()
+            return jsonify({'message': 'successfully created item.',
+                            'item_name': bucketlistitem.item_name})
+
+
+
+class BucketListItemApi(Resource):
+
+    @auth.login_required
+    def get(self, id, item_id):
+        bucketlistitem = BucketListItem. \
+            query.filter_by(bucketlist_id=id, item_id=item_id).first()
+        return jsonify({'item':
+                       marshal(bucketlistitem, bucketlistitem_serializer)})
+
+    @auth.login_required
+    def put(self, id, item_id):
+        bucketlistitem = BucketListItem. \
+            query.filter_by(bucketlist_id=id, item_id=item_id).first()
+        parser = reqparse.RequestParser()
+        parser.add_argument('item_name')
+        parser.add_argument('priority')
+        parser.add_argument('done')
+        args = parser.parse_args()
+        item_name = args['item_name']
+        priority = args['priority']
+        done = args['done']
+        if item_name or priority or done:
+            bucketlistitem.item_name = item_name
+            bucketlistitem.priority = priority
+            bucketlistitem.done = done
+        db.session.add(bucketlistitem)
+        db.session.commit()
+        return jsonify({'message': 'successfully updated item.',
+                        'item_name': bucketlistitem.item_name})
+
+    @auth.login_required
+    def delete(self, id, item_id):
+        bucketlistitem = BucketListItem. \
+            query.filter_by(bucketlist_id=id, item_id=item_id).first()
+        if bucketlistitem:
+            db.session.delete(bucketlistitem)
+            db.session.commit()
+            return jsonify({'message':
+                            'successfully deleted bucketlistitem'})
+        else:
+            return jsonify({'message': 'the delete was unsuccessful.'})
+
+
 class UserLogin(Resource):
     def post(self):
         parser = reqparse.RequestParser()
