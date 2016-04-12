@@ -33,6 +33,10 @@ class BucketList(db.Model):
     bucketlist_items = db.relationship('BucketListItem', backref='bucketlist')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_by = db.Column(db.Integer)
+    date_created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
+                              onupdate=db.func.current_timestamp())
+
 
     def __repr__(self):
         """Return a string representation of the bucketlist."""
