@@ -6,7 +6,8 @@ from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.restful import Resource, Api
 from app.api_v1.resources import TestResource, \
-    BucketListsApi, BucketListApi, UserLogin, UserRegister
+    BucketListsApi, BucketListApi, UserLogin, UserRegister, \
+    BucketListItemsApi, BucketListItemApi
 
 app = flask_app
 api = Api(app=app, prefix='/api/v1.0')
@@ -19,6 +20,8 @@ api.add_resource(BucketListsApi, '/bucketlists/')
 api.add_resource(BucketListApi, '/bucketlists/<id>/')
 api.add_resource(UserLogin, '/auth/login/')
 api.add_resource(UserRegister, '/auth/register/')
+api.add_resource(BucketListItemsApi, '/bucketlists/<id>/items/')
+api.add_resource(BucketListItemApi, '/bucketlists/<id>/items/<item_id>/')
 
 
 def make_shell_context():
