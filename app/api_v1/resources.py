@@ -31,10 +31,15 @@ class BucketListsApi(Resource):
     @auth.login_required
     def get(self):
         args = request.args.to_dict()
-        if args:
-            limit = int(args.get('limit'))
-        bucketlists = BucketList.query.\
-            filter_by(created_by=g.user.id).paginate(1, limit, False).items
+        limit = int(args.get('limit'))
+        page = int(args.get('page'))
+        if limit and page:
+            print 'limit is', limit, 'page is', page
+            bucketlists = BucketList.query.\
+             filter_by(created_by=g.user.id).paginate(page, limit, False).items
+        else:
+            bucketlists = BucketList.\
+                query.filter_by(created_by=g.user.id).all()
         return {'bucketlists': marshal(bucketlists,
                                        bucketlist_serializer)}
 
@@ -103,8 +108,13 @@ class BucketListItemsApi(Resource):
         args = request.args.to_dict()
         if args:
             limit = int(args.get('limit'))
-        bucketlistitems = BucketListItem.query.filter_by(bucketlist_id=id).\
-            paginate(1, limit, False).items
+            page = int(args.get('page'))
+            if limit and page:
+                bucketlistitems = BucketListItem.query.filter_by(bucketlist_id=id).\
+                 paginate(page, limit, False).items
+        else:
+            bucketlistitems = BucketListItem.query.filter_by(bucketlist_id=id).\
+              all()
         return jsonify({'items':
                        marshal(bucketlistitems, bucketlistitem_serializer)})
 
