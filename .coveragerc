@@ -1,0 +1,17 @@
+[report]
+omit=
+    */python?.?/*
+    *site-packages/*
+    *site-packages/nose/*
+    *docopt.py*
+    *docopt*
+    *__init__*
+    *tests/*
+
+exclude_lines =
+    if __name__ == .__main__.:
+    print_allocations
+    get_room_members
+
+[html]
+directory = coverage_html
