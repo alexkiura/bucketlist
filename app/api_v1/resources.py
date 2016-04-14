@@ -222,7 +222,7 @@ class UserLogin(Resource):
         else:
             return jsonify({'message':
                             'Please provide a username and password'})
-        if user:
+        if user and user.verify(password):
             token = user.generate_auth_token()
             return jsonify({'token': token.decode('ascii'),
                             'duration': 10000})
