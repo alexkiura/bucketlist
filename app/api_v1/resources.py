@@ -22,6 +22,7 @@ def verify_password(token, password):
     g.user = user
     return True
 
+
 class TestResource(Resource):
     def get(self):
         return {'Message': 'Welcome to my api'}
@@ -31,15 +32,35 @@ class BucketListsApi(Resource):
     @auth.login_required
     def get(self):
         args = request.args.to_dict()
-        limit = int(args.get('limit'))
-        page = int(args.get('page'))
+        limit, page = 10, 1
+        if args:
+            if args.get('limit'):
+                limit = int(args.get('limit'))
+            if args.get('page'):
+                limit = int(args.get('page'))
+            name = args.get('q')
+            if name:
+                search_results = BucketList.query.\
+                    filter_by(created_by=g.user.id, list_name=name).\
+                    paginate(page, limit, False).items
+                if search_results:
+                    return jsonify({'bucketlists':
+                                    marshal(search_results,
+                                            bucketlist_serializer)})
+                else:
+                    return jsonify({'message':
+                                    'Bucketlist ' + name + ' doesn\'t exist.'})
+        if args.keys().__contains__('q'):
+            return jsonify({'message': 'Please provide a search parameter'})
+
         if limit and page:
             print 'limit is', limit, 'page is', page
             bucketlists = BucketList.query.\
-             filter_by(created_by=g.user.id).paginate(page, limit, False).items
+                filter_by(created_by=g.user.id).paginate(
+                    page, limit, False).items
         else:
-            bucketlists = BucketList.\
-                query.filter_by(created_by=g.user.id).all()
+            bucketlists = BucketList.query.filter_by(
+                created_by=g.user.id).all()
         return {'bucketlists': marshal(bucketlists,
                                        bucketlist_serializer)}
 
@@ -59,6 +80,7 @@ class BucketListsApi(Resource):
         else:
             return jsonify({'message': 'Failure. Please provide a name for the'
                             'bucketlist'})
+
 
 class BucketListApi(Resource):
     @auth.login_required
@@ -137,7 +159,6 @@ class BucketListItemsApi(Resource):
             db.session.commit()
             return jsonify({'message': 'successfully created item.',
                             'item_name': bucketlistitem.item_name})
-
 
 
 class BucketListItemApi(Resource):
