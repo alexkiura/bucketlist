@@ -55,4 +55,12 @@ class TestBucketLists(ApiTestCase):
         self.assertEqual(resp_bucketlist.status_code, 200)
 
     def test_bucketlist_pagination(self):
-        pass
+        with open('tests/list_names.in', 'r') as f:
+            for list_name in f.readlines():
+                self.app.post('/api/v1.0/bucketlists/',
+                              data={'list_name': list_name},
+                              headers=self.get_header())
+        resp_bucketlist = self.app.get('/api/v1.0/bucketlists/?limit=5',
+                                       headers=self.get_header())
+        results = json.loads(resp_bucketlist.data)
+        self.assertEqual(len(results['bucketlists']), 5)
