@@ -12,15 +12,13 @@ auth = HTTPBasicAuth()
 
 @auth.verify_password
 def verify_password(token, password):
-    # first try to authenticate by token
-    user = User.verify_auth_token(token)
-    if not user:
-        # try to authenticate    with username/password
-        user = User.query.filter_by(username=token).first()
-        if not user or not user.verify(password):
-            return False
-    g.user = user
-    return True
+    token = request.headers.get('token')
+    if token is not None:
+        user = User.verify_auth_token(token)
+        if user:
+            g.user = user
+            return True
+    return False
 
 
 class TestResource(Resource):
@@ -67,7 +65,8 @@ class BucketListsApi(Resource):
     @auth.login_required
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('list_name')
+        parser.add_argument('list_name', required=True,
+                            help='list_name can not be blank')
         args = parser.parse_args()
         list_name = args['list_name']
         if list_name:
@@ -77,9 +76,9 @@ class BucketListsApi(Resource):
             db.session.commit()
             return jsonify({'message': 'success',
                             'list_name': bucketlist.list_name})
-        else:
-            return jsonify({'message': 'Failure. Please provide a name for the'
-                            'bucketlist'})
+        # else:
+        #     return jsonify({'message': 'Failure. Please provide a name for the'
+        #                     'bucketlist'})
 
 
 class BucketListApi(Resource):
@@ -97,7 +96,8 @@ class BucketListApi(Resource):
         bucketlist = BucketList.query.filter_by(created_by=g.user.id,
                                                 id=id).first()
         parser = reqparse.RequestParser()
-        parser.add_argument('list_name')
+        parser.add_argument('list_name', required=True,
+                            help='list_name can not be blank')
         args = parser.parse_args()
         new_list_name = args['list_name']
         if new_list_name:
@@ -143,8 +143,10 @@ class BucketListItemsApi(Resource):
     @auth.login_required
     def post(self, id):
         parser = reqparse.RequestParser()
-        parser.add_argument('item_name')
-        parser.add_argument('priority')
+        parser.add_argument('item_name', required=True,
+                            help='item_name can not be blank')
+        parser.add_argument('priority', required=True,
+                            help='priority can not be blank')
         args = parser.parse_args()
         item_name = args['item_name']
         priority = args['priority']
@@ -207,8 +209,10 @@ class BucketListItemApi(Resource):
 class UserLogin(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('username')
-        parser.add_argument('password')
+        parser.add_argument('username', required=True,
+                            help='username can not be blank')
+        parser.add_argument('password', required=True,
+                            help='password can not be blank')
         args = parser.parse_args()
         username = args['username']
         password = args['password']
@@ -231,8 +235,10 @@ class UserLogin(Resource):
 class UserRegister(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('username')
-        parser.add_argument('password')
+        parser.add_argument('username', required=True,
+                            help='username can not be blank')
+        parser.add_argument('password', required=True,
+                            help='password can not be blank')
         args = parser.parse_args()
         username = args['username']
         password = args['password']
