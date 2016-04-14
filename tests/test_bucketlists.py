@@ -30,4 +30,29 @@ class TestBucketLists(ApiTestCase):
         self.assertEqual(resp_bucketlist.status_code, 400)
 
     def test_get_bucketlists(self):
+        self.app.post('/api/v1.0/bucketlists/', data={'list_name': 'Drinks'},
+                      headers=self.get_header())
+        resp_bucketlist = self.app.get('/api/v1.0/bucketlists/',
+                                       headers=self.get_header())
+        self.assertEqual(resp_bucketlist.status_code, 200)
+        result = json.loads(resp_bucketlist.data)['bucketlists'][0]
+        print result
+        self.assertEqual(result.get('list_name'), 'Drinks')
+
+    def test_put_bucketlist(self):
+        self.app.post('/api/v1.0/bucketlists/', data={'list_name': 'Drinks'},
+                      headers=self.get_header())
+        resp_bucketlist = self.app.put('/api/v1.0/bucketlists/1/',
+                                       data={'list_name': 'Drinks I want'},
+                                       headers=self.get_header())
+        self.assertEqual(resp_bucketlist.status_code, 200)
+
+    def test_delete_bucketlist(self):
+        self.app.post('/api/v1.0/bucketlists/', data={'list_name': 'Drinks'},
+                      headers=self.get_header())
+        resp_bucketlist = self.app.delete('/api/v1.0/bucketlists/1/',
+                                          headers=self.get_header())
+        self.assertEqual(resp_bucketlist.status_code, 200)
+
+    def test_bucketlist_pagination(self):
         pass
