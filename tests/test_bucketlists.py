@@ -13,7 +13,7 @@ class TestBucketLists(ApiTestCase):
         token = result.get('token').encode('ascii')
         return {'token': token}
 
-    def test_bucketlist_creation(self):
+    def test_post_bucketlist(self):
         data = {'list_name': 'Travelling'}
         resp_bucketlist = self.app.post('/api/v1.0/bucketlists/',
                                         data=data, headers=self.get_header())
