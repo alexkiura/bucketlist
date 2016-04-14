@@ -18,6 +18,13 @@ class TestUserAuth(ApiTestCase):
         self.user = {'username': 'alex', 'password': 'foobar'}
         result = self.app.post('/api/v1.0/auth/login/', data=self.user)
         resp_data = json.loads(result.data)
-        print resp_data
         self.assertTrue(resp_data.has_key('token'))
         self.assertTrue(resp_data.has_key('duration'))
+
+    def test_incorrect_login(self):
+        self.user = {'username': 'alex', 'password': '123'}
+        result = self.app.post('/api/v1.0/auth/login/', data=self.user)
+        resp_data = json.loads(result.data)
+        self.assertEqual(resp_data, {'message':
+                                     'The username or password was invalid.'
+                                     'Please try again'})
