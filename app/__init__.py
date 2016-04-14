@@ -9,7 +9,7 @@ from config.config import config
 db = SQLAlchemy()
 
 
-def create_app(config_name):
+def make_app(config_name):
     """
     Create a Flask application instance.
 
@@ -24,12 +24,8 @@ def create_app(config_name):
     # app.config.from_object(config[config_name])
     app.config.from_object(config[config_name])
     db.init_app(app)
-    # import ipdb; ipdb.set_trace()
-    # from .api_v1 import api_v1 as api_1_blueprint
-    # app.register_blueprint(api_1_blueprint, url_prefix='/api/v1.0')
-    # app.register_blueprint(api_1_blueprint)
 
     return app
 
-flask_app = create_app('development')
+flask_app = make_app('development')
 # api = Api(flask_app)
