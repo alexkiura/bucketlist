@@ -9,6 +9,7 @@ import nose
 
 
 class ApiTestCase(TestCase):
+    """Test API creation."""
 
     def create_app(self, app=app):
         """Create a flask instance."""
@@ -16,7 +17,7 @@ class ApiTestCase(TestCase):
         return app
 
     def setUp(self):
-        # self.app = create_app('testing').test_client()
+        """Setup testcase."""
         self.app = self.create_app().test_client()
         db.create_all()
         # create & add test user
@@ -25,6 +26,7 @@ class ApiTestCase(TestCase):
         db.session.commit()
 
     def test_index_route(self):
+        """Test /api/v1.0/."""
         result = self.app.get('/api/v1.0/')
         print result.data
         result = json.loads(result.data)
@@ -32,6 +34,7 @@ class ApiTestCase(TestCase):
         self.assertEqual(result, {'Message': 'Welcome to my api'})
 
     def tearDown(self):
+        """Clean up."""
         db.session.remove()
         db.drop_all()
 
