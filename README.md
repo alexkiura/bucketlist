@@ -87,7 +87,7 @@ nosetests --with-coverage
 Bucketlist has a RESTful Application Program Interface (API)
 
 ### Bucketlist's resources
-The API resources are accessible at [localhost:8000/api/v1/](http://127.0.0.1:8000/api/v1/). They include:
+The API resources are accessible at [localhost:8000/api/v1/](http://127.0.0.1:8000/api/v1.0/). They include:
 
 | Resource URL | Methods | Description |
 | -------- | ------------- | --------- |
