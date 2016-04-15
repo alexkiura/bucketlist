@@ -127,10 +127,13 @@ class BucketListItemsApi(Resource):
 
     @auth.login_required
     def get(self, id):
+        limit, page = 10, 1
         args = request.args.to_dict()
         if args:
-            limit = int(args.get('limit'))
-            page = int(args.get('page'))
+            if args.get('limit'):
+                limit = int(args.get('limit'))
+            if args.get('page'):
+                page = int(args.get('page'))
             if limit and page:
                 bucketlistitems = BucketListItem.query.filter_by(bucketlist_id=id).\
                  paginate(page, limit, False).items
