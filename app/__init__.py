@@ -2,7 +2,6 @@
 
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.restful import Api
 from config.config import config
 # import ipdb; ipdb.set_trace()
 
