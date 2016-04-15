@@ -6,8 +6,9 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from config.config import config
 
+
 class BucketListItem(db.Model):
-    """Defines the items in a user's bucketlist."""
+    """Define items in a user's bucketlist."""
 
     __tablename__ = "bucketlistitems"
     item_id = db.Column(db.Integer, primary_key=True)
@@ -25,7 +26,18 @@ class BucketListItem(db.Model):
 
 
 class BucketList(db.Model):
-    """Defines a user's BucketList and operations allowed."""
+    """
+    Define a bucketlist.
+
+    Attributes:
+        id (int): A user's id.
+        list_name (str): A unique identifier for a bucketlist.
+        bucketlists (relationship): A user's bucketlists.
+        user_id (int): The creator's id
+        created_by (int): The creator's id
+        date_created (dateTime): Date of bucketlist creation
+        date_modified (dateTime): Date of bucketlist modification
+    """
 
     __tablename__ = 'bucketlists'
     id = db.Column(db.Integer, primary_key=True)
@@ -37,7 +49,6 @@ class BucketList(db.Model):
     date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
                               onupdate=db.func.current_timestamp())
 
-
     def __repr__(self):
         """Return a string representation of the bucketlist."""
         return '<BucketList %r>' % self.list_name
@@ -45,7 +56,7 @@ class BucketList(db.Model):
 
 class User(db.Model):
     """
-    This represents the user model.
+    Define a user.
 
     Attributes:
         id (int): A user's id.
@@ -79,6 +90,7 @@ class User(db.Model):
 
     @property
     def password(self):
+        """User password."""
         raise AttributeError('password is not a readable attribute')
 
     @password.setter
@@ -87,12 +99,27 @@ class User(db.Model):
         self.password_hash = generate_password_hash(password)
 
     def generate_auth_token(self, expiration=10000):
+        """
+        Generate a token expiring after 10 minutes.
+
+        Returns:
+            token: authentication token
+        """
         token_serializer = Serializer(config['SECRET_KEY'],
                                       expires_in=expiration)
         return token_serializer.dumps({'id': self.id})
 
     @staticmethod
     def verify_auth_token(token):
+        """
+        Verify a token.
+
+        Args:
+            token: The token to be verified
+
+        Returns:
+            The user whose id is in the decoded token
+        """
         token_serializer = Serializer(config['SECRET_KEY'])
         try:
             data = token_serializer.loads(token)
