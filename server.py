@@ -1,10 +1,9 @@
 """This module runs the api server."""
-import os
 from app import flask_app, db
 from app.models import User, BucketList, BucketListItem
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
-from flask.ext.restful import Resource, Api
+from flask.ext.restful import Api
 from app.api_v1.resources import IndexResource, \
     BucketListsApi, BucketListApi, UserLogin, UserRegister, \
     BucketListItemsApi, BucketListItemApi
