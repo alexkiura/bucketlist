@@ -30,3 +30,35 @@ class TestBucketListItemss(ApiTestCase):
         self.assertEqual(json.loads(resp.data),
                          {'message': 'successfully created item.',
                           'item_name': data['item_name']})
+
+    def test_get_bucketlistitems(self):
+        self.add_bucketlist()
+        data = {'item_name': 'travel to Canada', 'priority': 'High'}
+        self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
+                      headers=self.get_header())
+        resp = self.app.get('/api/v1.0/bucketlists/1/items/',
+                            headers=self.get_header())
+        self.assert200(resp)
+
+    def test_put_bucketlistitem(self):
+        self.add_bucketlist()
+        data = {'item_name': 'travel to Columbia', 'priority': 'Medium'}
+        self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
+                      headers=self.get_header())
+        data['item_name'] = 'Travel to Kenya'
+        resp = self.app.put('/api/v1.0/bucketlists/1/items/1/',
+                            data=data,
+                            headers=self.get_header())
+        self.assert200(resp)
+        self.assertEqual(json.loads(resp.data),
+                         {'item_name': data['item_name'],
+                          'message': 'successfully updated item.'})
+
+    def test_delete_bucketlistitem(self):
+        self.add_bucketlist()
+        data = {'item_name': 'travel to Columbia', 'priority': 'Medium'}
+        self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
+                      headers=self.get_header())
+        resp = self.app.delete('/api/v1.0/bucketlists/1/items/1/',
+                               headers=self.get_header())
+        self.assert200(resp)
