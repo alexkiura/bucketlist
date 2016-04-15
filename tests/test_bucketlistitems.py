@@ -62,3 +62,18 @@ class TestBucketListItemss(ApiTestCase):
         resp = self.app.delete('/api/v1.0/bucketlists/1/items/1/',
                                headers=self.get_header())
         self.assert200(resp)
+
+
+    def test_bucketlistitem_pagination(self):
+        self.add_bucketlist()
+        with open('tests/item_names.in', 'r') as f:
+            for item_name in f.readlines():
+                self.app.post('/api/v1.0/bucketlists/1/items/',
+                              data={'item_name': item_name,
+                                    'priority': 'High'},
+                              headers=self.get_header())
+        resp = self.app.get('/api/v1.0/bucketlists/1/items/?limit=4',
+                            headers=self.get_header())
+        results = json.loads(resp.data)['items']
+        print results
+        self.assertEqual(len(results), 4)
