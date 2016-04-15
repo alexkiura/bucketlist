@@ -76,3 +76,20 @@ class TestBucketLists(ApiTestCase):
                                        headers=self.get_header())
         results = json.loads(resp_bucketlist.data)['bucketlists']
         self.assertEqual(len(results), 1)
+
+    def test_single_bucketlist(self):
+        data = {'list_name': 'Travelling'}
+        self.app.post('/api/v1.0/bucketlists/',
+                      data=data, headers=self.get_header())
+        resp_bucketlist = self.app.get('/api/v1.0/bucketlists/1/',
+                                       headers=self.get_header())
+        self.assert200(resp_bucketlist)
+
+    def test_no_bucketlist(self):
+        data = {'list_name': 'Travelling'}
+        self.app.post('/api/v1.0/bucketlists/',
+                      data=data, headers=self.get_header())
+        resp_bucketlist = self.app.get('/api/v1.0/bucketlists/100/',
+                                       headers=self.get_header())
+        self.assertEqual(json.loads(resp_bucketlist.data),
+                         {'message': 'the bucketlist was not found.'})
