@@ -12,6 +12,15 @@ auth = HTTPBasicAuth()
 
 @auth.verify_password
 def verify_password(token, password):
+    """
+    Verify a user's password.
+
+    Args:
+        token:
+        password:
+    retuns:
+        True if the password is correct.
+    """
     token = request.headers.get('token')
     if token is not None:
         user = User.verify_auth_token(token)
@@ -21,14 +30,40 @@ def verify_password(token, password):
     return False
 
 
-class TestResource(Resource):
+class IndexResource(Resource):
+    """
+    Manage responses to the index route.
+
+    URL:
+        /api/v1.0/
+    Methods:
+        GET
+    """
+
     def get(self):
+        """Return a welcome message."""
         return {'Message': 'Welcome to my api'}
 
 
 class BucketListsApi(Resource):
+    """
+    Manage responses to bucketlists requests.
+
+    URL:
+        /api/v1.0/bucketlists/
+
+    Methods:
+        GET, POST
+    """
+
     @auth.login_required
     def get(self):
+        """
+        Retrieve created bucketlists.
+
+        Returns:
+            json: A list of bucketlists created by the user.
+        """
         args = request.args.to_dict()
         limit, page = 10, 1
         if args:
@@ -64,6 +99,12 @@ class BucketListsApi(Resource):
 
     @auth.login_required
     def post(self):
+        """
+        Create a new bucketlist.
+
+        Returns:
+            A resonse indicating success.
+        """
         parser = reqparse.RequestParser()
         parser.add_argument('list_name', required=True,
                             help='list_name can not be blank')
@@ -76,14 +117,30 @@ class BucketListsApi(Resource):
             db.session.commit()
             return jsonify({'message': 'success',
                             'list_name': bucketlist.list_name})
-        # else:
-        #     return jsonify({'message': 'Failure. Please provide a name for the'
-        #                     'bucketlist'})
 
 
 class BucketListApi(Resource):
+    """
+    Manage responses to bucketlists requests.
+
+    URL:
+        /api/v1.0/bucketlists/<id>/
+
+    Methods:
+        GET, PUT, DELETE
+    """
+
     @auth.login_required
     def get(self, id):
+        """
+        Retrieve the bucketlist using an id.
+
+        Args:
+            id: The id of the bucketlist to be retrieved
+
+        Returns:
+            json: The bucketlist with the id.
+        """
         bucketlist = BucketList.query.filter_by(created_by=g.user.id,
                                                 id=id).first()
         if bucketlist:
@@ -93,6 +150,15 @@ class BucketListApi(Resource):
 
     @auth.login_required
     def put(self, id):
+        """
+        Update a bucketlist.
+
+        Args:
+            id: The id of the bucketlist to be updated
+
+        Returns:
+            json: response with success or failure message.
+        """
         bucketlist = BucketList.query.filter_by(created_by=g.user.id,
                                                 id=id).first()
         parser = reqparse.RequestParser()
@@ -112,6 +178,15 @@ class BucketListApi(Resource):
 
     @auth.login_required
     def delete(self, id):
+        """
+        Delete a bucketlist.
+
+        Args:
+            id: The id of the bucketlist to be updated
+
+        Returns:
+            json: response with success or failure message.
+        """
         bucketlist = BucketList.query.filter_by(created_by=g.user.id,
                                                 id=id).first()
         if bucketlist:
@@ -122,11 +197,28 @@ class BucketListApi(Resource):
             return jsonify({'message': 'the delete was unsuccessful.'})
 
 
-
 class BucketListItemsApi(Resource):
+    """
+    Manage responses to bucketlist itemsrequests.
+
+    URL:
+        /api/v1.0/bucketlists/<id>/items/
+
+    Methods:
+        GET, POST
+    """
 
     @auth.login_required
     def get(self, id):
+        """
+        Retrieve bucketlist items.
+
+        Args:
+            id: The id of the bucketlist from which to retrieve items
+
+        Returns:
+            json: response with bucketlist items.
+        """
         limit, page = 10, 1
         args = request.args.to_dict()
         if args:
@@ -135,16 +227,26 @@ class BucketListItemsApi(Resource):
             if args.get('page'):
                 page = int(args.get('page'))
             if limit and page:
-                bucketlistitems = BucketListItem.query.filter_by(bucketlist_id=id).\
-                 paginate(page, limit, False).items
+                bucketlistitems = BucketListItem.\
+                    query.filter_by(bucketlist_id=id).\
+                    paginate(page, limit, False).items
         else:
-            bucketlistitems = BucketListItem.query.filter_by(bucketlist_id=id).\
-              all()
+            bucketlistitems = BucketListItem.\
+                query.filter_by(bucketlist_id=id).all()
         return jsonify({'items':
                        marshal(bucketlistitems, bucketlistitem_serializer)})
 
     @auth.login_required
     def post(self, id):
+        """
+        Add anitem to a bucketlist.
+
+        Args:
+            id: The id of the bucketlist to add item
+
+        Returns:
+            json: response with success message and item name.
+        """
         parser = reqparse.RequestParser()
         parser.add_argument('item_name', required=True,
                             help='item_name can not be blank')
@@ -167,9 +269,28 @@ class BucketListItemsApi(Resource):
 
 
 class BucketListItemApi(Resource):
+    """
+    Manage responses to bucketlist items requests.
+
+    URL:
+        /api/v1.0/bucketlists/<id>/items/<item_id>/
+
+    Methods:
+        GET, POST
+    """
 
     @auth.login_required
     def get(self, id, item_id):
+        """
+        Retrieve an item from a bucketlist.
+
+        Args:
+            id: The id of the bucketlist with the item
+            item_id: The id of the item being retrieved
+
+        Returns:
+            json: The bucketlist item with id item_id.
+        """
         bucketlistitem = BucketListItem. \
             query.filter_by(bucketlist_id=id, item_id=item_id).first()
         return jsonify({'item':
@@ -177,6 +298,16 @@ class BucketListItemApi(Resource):
 
     @auth.login_required
     def put(self, id, item_id):
+        """
+        Update a bucketlist item.
+
+        Args:
+            id: The id of the bucketlist with the item
+            item_id: The id of the item being updated
+
+        Returns:
+            json: A response with a success message.
+        """
         bucketlistitem = BucketListItem. \
             query.filter_by(bucketlist_id=id, item_id=item_id).first()
         parser = reqparse.RequestParser()
@@ -198,6 +329,16 @@ class BucketListItemApi(Resource):
 
     @auth.login_required
     def delete(self, id, item_id):
+        """
+        Delete a bucketlist item.
+
+        Args:
+            id: The id of the bucketlist with the item
+            item_id: The id of the item being deleted
+
+        Returns:
+            json: A response with a success/ failure message.
+        """
         bucketlistitem = BucketListItem. \
             query.filter_by(bucketlist_id=id, item_id=item_id).first()
         if bucketlistitem:
@@ -210,7 +351,23 @@ class BucketListItemApi(Resource):
 
 
 class UserLogin(Resource):
+    """
+    Manage responses to user requests.
+
+    URL:
+        /api/v1.0/auth/login/
+
+    Methods:
+        POST
+    """
+
     def post(self):
+        """
+        Authenticate a user.
+
+        Returns:
+            json: authentication token, expiration duration or error message.
+        """
         parser = reqparse.RequestParser()
         parser.add_argument('username', required=True,
                             help='username can not be blank')
@@ -236,7 +393,23 @@ class UserLogin(Resource):
 
 
 class UserRegister(Resource):
+    """
+    Manage responses to user requests.
+
+    URL:
+        /api/v1.0/auth/register/
+
+    Methods:
+        POST
+    """
+
     def post(self):
+        """
+        Register a user.
+
+        Returns:
+            json: authentication token, username and duration or error message.
+        """
         parser = reqparse.RequestParser()
         parser.add_argument('username', required=True,
                             help='username can not be blank')
