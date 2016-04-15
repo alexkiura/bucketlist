@@ -1,12 +1,18 @@
 """This module tests CRUD operations on a bucketlists' bucketitems."""
 import json
-from test_api import ApiTestCase, db
-import nose
+from test_api import ApiTestCase
 
 
-class TestBucketListItemss(ApiTestCase):
+class TestBucketListItems(ApiTestCase):
+    """Test bucketlist items actions."""
 
     def get_header(self):
+        """
+        Authenticate a user.
+
+        Returns:
+            request header with token
+        """
         user = {'username': 'alex', 'password': 'foobar'}
         resp_login = self.app.post('/api/v1.0/auth/login/', data=user)
         result = json.loads(resp_login.data)
@@ -14,6 +20,7 @@ class TestBucketListItemss(ApiTestCase):
         return {'token': token}
 
     def add_bucketlist(self):
+        """Create new bucketlist to test bucketlist item actions."""
         data = {'list_name': 'Travelling'}
         resp_bucketlist = self.app.post('/api/v1.0/bucketlists/',
                                         data=data, headers=self.get_header())
@@ -22,6 +29,7 @@ class TestBucketListItemss(ApiTestCase):
         return False
 
     def test_post_bucketlistitem(self):
+        """Test adding an item to a bucketlist."""
         self.add_bucketlist()
         data = {'item_name': 'travel to Canada', 'priority': 'High'}
         resp = self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
@@ -32,6 +40,7 @@ class TestBucketListItemss(ApiTestCase):
                           'item_name': data['item_name']})
 
     def test_get_bucketlistitems(self):
+        """Test retrieveing all bucketlist items."""
         self.add_bucketlist()
         data = {'item_name': 'travel to Canada', 'priority': 'High'}
         self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
@@ -41,6 +50,7 @@ class TestBucketListItemss(ApiTestCase):
         self.assert200(resp)
 
     def test_put_bucketlistitem(self):
+        """Test updating bucketlist items."""
         self.add_bucketlist()
         data = {'item_name': 'travel to Columbia', 'priority': 'Medium'}
         self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
@@ -55,6 +65,7 @@ class TestBucketListItemss(ApiTestCase):
                           'message': 'successfully updated item.'})
 
     def test_delete_bucketlistitem(self):
+        """Test deleting a bucketlist item."""
         self.add_bucketlist()
         data = {'item_name': 'travel to Columbia', 'priority': 'Medium'}
         self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
@@ -63,8 +74,8 @@ class TestBucketListItemss(ApiTestCase):
                                headers=self.get_header())
         self.assert200(resp)
 
-
     def test_bucketlistitem_pagination(self):
+        """Test pagination and limiting results."""
         self.add_bucketlist()
         with open('tests/item_names.in', 'r') as f:
             for item_name in f.readlines():
