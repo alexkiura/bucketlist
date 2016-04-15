@@ -5,7 +5,7 @@ from app.models import User, BucketList, BucketListItem
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.restful import Resource, Api
-from app.api_v1.resources import TestResource, \
+from app.api_v1.resources import IndexResource, \
     BucketListsApi, BucketListApi, UserLogin, UserRegister, \
     BucketListItemsApi, BucketListItemApi
 
@@ -15,7 +15,7 @@ manager = Manager(app)
 migrate = Migrate(app, db)
 
 # add resources
-api.add_resource(TestResource, '/')
+api.add_resource(IndexResource, '/')
 api.add_resource(BucketListsApi, '/bucketlists/')
 api.add_resource(BucketListApi, '/bucketlists/<id>/')
 api.add_resource(UserLogin, '/auth/login/')
