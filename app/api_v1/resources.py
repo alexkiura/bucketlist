@@ -384,8 +384,7 @@ class UserLogin(Resource):
                             'Please provide a username and password'})
         if user and user.verify(password):
             token = user.generate_auth_token()
-            return jsonify({'token': token.decode('ascii'),
-                            'duration': 10000})
+            return jsonify({'token': token.decode('ascii')})
         else:
             return jsonify({'message':
                             'The username or password was invalid.'
