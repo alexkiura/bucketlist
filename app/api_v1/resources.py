@@ -428,9 +428,7 @@ class UserRegister(Resource):
             db.session.add(user)
             db.session.commit()
             token = user.generate_auth_token()
-            return jsonify({'username': user.username,
-                            'token': token.decode('ascii'),
-                            'duration': 10000})
+            return jsonify({'token': token.decode('ascii')})
         else:
             return jsonify({'message':
                             'The registration was not successful.'
