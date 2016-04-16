@@ -14,8 +14,6 @@ class TestUserAuth(ApiTestCase):
         self.assertEqual(result.status_code, 200)
         resp_data = json.loads(result.data)
         self.assertTrue('token' in resp_data)
-        self.assertTrue('username' in resp_data)
-        self.assertEqual(resp_data.get('username'), self.user['username'])
 
     def test_user_login(self):
         """Test user login."""
@@ -23,7 +21,6 @@ class TestUserAuth(ApiTestCase):
         result = self.app.post('/api/v1.0/auth/login/', data=self.user)
         resp_data = json.loads(result.data)
         self.assertTrue('token' in resp_data)
-        self.assertTrue('duration' in resp_data)
 
     def test_incorrect_login(self):
         """Test incorrect credentials."""
