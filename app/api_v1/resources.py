@@ -21,7 +21,7 @@ def verify_password(token, password):
     retuns:
         True if the password is correct.
     """
-    token = request.headers.get('token')
+    token = request.headers.get('authorization')
     if token is not None:
         user = User.verify_auth_token(token)
         if user:
@@ -384,7 +384,7 @@ class UserLogin(Resource):
                             'Please provide a username and password'})
         if user and user.verify(password):
             token = user.generate_auth_token()
-            return jsonify({'token': token.decode('ascii')})
+            return jsonify({'authorization': token.decode('ascii')})
         else:
             return jsonify({'message':
                             'The username or password was invalid.'
@@ -427,7 +427,7 @@ class UserRegister(Resource):
             db.session.add(user)
             db.session.commit()
             token = user.generate_auth_token()
-            return jsonify({'token': token.decode('ascii')})
+            return jsonify({'authorization': token.decode('ascii')})
         else:
             return jsonify({'message':
                             'The registration was not successful.'
