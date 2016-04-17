@@ -280,23 +280,6 @@ class BucketListItemApi(Resource):
     """
 
     @auth.login_required
-    def get(self, id, item_id):
-        """
-        Retrieve an item from a bucketlist.
-
-        Args:
-            id: The id of the bucketlist with the item
-            item_id: The id of the item being retrieved
-
-        Returns:
-            json: The bucketlist item with id item_id.
-        """
-        bucketlistitem = BucketListItem. \
-            query.filter_by(bucketlist_id=id, item_id=item_id).first()
-        return jsonify({'item':
-                       marshal(bucketlistitem, bucketlistitem_serializer)})
-
-    @auth.login_required
     def put(self, id, item_id):
         """
         Update a bucketlist item.
