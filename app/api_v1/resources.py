@@ -115,8 +115,8 @@ class BucketListsApi(Resource):
                                     user_id=g.user.id)
             db.session.add(bucketlist)
             db.session.commit()
-            return jsonify({'message': 'success',
-                            'list_name': bucketlist.list_name})
+            return jsonify({'bucketlist': marshal(bucketlist,
+                                                  bucketlist_serializer)})
 
 
 class BucketListApi(Resource):
@@ -264,8 +264,8 @@ class BucketListItemsApi(Resource):
                                             bucketlist_id=id)
             db.session.add(bucketlistitem)
             db.session.commit()
-            return jsonify({'message': 'successfully created item.',
-                            'item_name': bucketlistitem.item_name})
+            return jsonify({'item': marshal(bucketlistitem,
+                                            bucketlistitem_serializer)})
 
 
 class BucketListItemApi(Resource):
