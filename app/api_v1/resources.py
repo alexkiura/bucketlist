@@ -7,6 +7,7 @@ from flask.ext.httpauth import HTTPBasicAuth
 from flask_restful import reqparse
 from app import db
 from sqlalchemy.exc import IntegrityError
+from collections import OrderedDict
 
 auth = HTTPBasicAuth()
 
@@ -115,13 +116,35 @@ class BucketListsApi(Resource):
             return jsonify({'message': 'Please provide a search parameter'})
 
         if limit and page:
-            bucketlists = BucketList.query.\
+            bucketlists_page = BucketList.query.\
                 filter_by(created_by=g.user.id).paginate(
-                    page=page, per_page=limit, error_out=False).items
+                    page=page, per_page=limit, error_out=False)
+            total = bucketlists_page.pages
+            has_next = bucketlists_page.has_next
+            has_previous = bucketlists_page.has_prev
+            # import ipdb; ipdb.set_trace()
+            if has_next:
+                next_page = str(request.url_root) + 'api/v1.0/bucketlists?' + \
+                    'limit=' + str(limit) + '&page=' + str(page + 1)
+            else:
+                next_page = 'None'
+            if has_previous:
+                previous_page = request.url_root + 'api/v1.0/bucketlists?' + \
+                    'limit=' + str(limit) + '&page=' + str(page - 1)
+            else:
+                previous_page = 'None'
+            bucketlists = bucketlists_page.items
         else:
             bucketlists = BucketList.query.filter_by(
                 created_by=g.user.id).all()
-        return marshal(bucketlists, bucketlist_serializer)
+
+        resp = {'bucketlists': marshal(bucketlists, bucketlist_serializer),
+                'has_next': has_next,
+                'pages': total,
+                'previous_page': previous_page,
+                'next_page': next_page
+                }
+        return resp
 
     @auth.login_required
     def post(self):
