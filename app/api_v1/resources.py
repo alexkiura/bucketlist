@@ -6,8 +6,38 @@ from flask import g, jsonify, request
 from flask.ext.httpauth import HTTPBasicAuth
 from flask_restful import reqparse
 from app import db
+from sqlalchemy.exc import IntegrityError
 
 auth = HTTPBasicAuth()
+
+
+def post_item(**kwargs):
+    """
+    Add an item to the database and handle any errors.
+
+    Args:
+        kwargs['field_name']: The field name of the item to be added to the db
+        kwargs['item']: The item to be added to the database
+        kwargs['serializer']: The marshal serializer
+        kwargs['is_user']: The flag is used to identify user objects so that
+                           they return a different response
+    retuns:
+        A response with a JSON object containing the auth token for user
+        objects and created objects.
+    """
+    try:
+        db.session.add(kwargs['item'])
+        db.session.commit()
+        if kwargs['is_user']:
+            token = kwargs['item'].generate_auth_token()
+            return {'Authorization': token}
+        return marshal(kwargs['item'], kwargs['serializer']), 201
+
+    except IntegrityError:
+        db.session.rollback()
+        return {'code': 400,
+                'field': kwargs['field_name'],
+                'error': 'The ' + kwargs['field_name'] + ' already exists'}
 
 
 @auth.verify_password
@@ -113,10 +143,8 @@ class BucketListsApi(Resource):
         if list_name:
             bucketlist = BucketList(list_name=list_name, created_by=g.user.id,
                                     user_id=g.user.id)
-            db.session.add(bucketlist)
-            db.session.commit()
-            return jsonify({'bucketlist': marshal(bucketlist,
-                                                  bucketlist_serializer)})
+            return post_item(field_name='bucketlist', item=bucketlist,
+                             is_user=False, serializer=bucketlist_serializer)
 
 
 class BucketListApi(Resource):
@@ -262,10 +290,14 @@ class BucketListItemsApi(Resource):
                                             priority=priority,
                                             done=done,
                                             bucketlist_id=id)
-            db.session.add(bucketlistitem)
-            db.session.commit()
-            return jsonify({'item': marshal(bucketlistitem,
-                                            bucketlistitem_serializer)})
+            try:
+                db.session.add(bucketlistitem)
+                db.session.commit()
+                return {'item': marshal(bucketlistitem,
+                                        bucketlistitem_serializer)}, 201
+            except IntegrityError:
+                db.session.rollback()
+                return {'error': 'The bucketlist item already exists.'}
 
 
 class BucketListItemApi(Resource):
@@ -401,17 +433,18 @@ class UserRegister(Resource):
         username = args['username']
         password = args['password']
 
-        if username and password:
-            user = User(username=username, password=password)
-        else:
-            return jsonify({'message':
-                            'Please provide a username and password'})
-        if user:
-            db.session.add(user)
-            db.session.commit()
-            token = user.generate_auth_token()
-            return jsonify({'Authorization': token.decode('ascii')})
-        else:
-            return jsonify({'message':
-                            'The registration was not successful.'
-                            'Please try again'})
+        user = User(username=username, password=password)
+        user = User(username=username, password=password)
+        return post_item(field_name='username', item=user, is_user=True,
+                         serializer=None)
+        # try:
+        #     db.session.add(user)
+        #     db.session.commit()
+        #     token = user.generate_auth_token()
+        #     return jsonify({'Authorization': token.decode('ascii')})
+        #
+        # except IntegrityError:
+        #     db.session.rollback()
+        #     return {'code': 400,
+        #             'field': 'username',
+        #             'error': 'A user with the given username already exists.'}
