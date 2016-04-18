@@ -25,6 +25,7 @@ class TestBucketLists(ApiTestCase):
         resp_bucketlist = self.app.post('/api/v1.0/bucketlists/',
                                         data=data, headers=self.get_header())
         self.assertIn(data['list_name'], resp_bucketlist.data)
+        self.assertEqual(resp_bucketlist.status_code, 201)
 
     def test_necessary_fields(self):
         """Test mandatory fields."""

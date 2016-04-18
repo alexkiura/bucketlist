@@ -35,6 +35,7 @@ class TestBucketListItems(ApiTestCase):
         resp = self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
                              headers=self.get_header())
         self.assertIn(data['item_name'], resp.data)
+        self.assertEqual(resp.status_code, 201)
 
     def test_get_bucketlistitems(self):
         """Test retrieveing all bucketlist items."""
