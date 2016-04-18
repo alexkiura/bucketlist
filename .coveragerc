@@ -9,9 +9,7 @@ omit=
     *tests/*
 
 exclude_lines =
-    if __name__ == .__main__.:
-    print_allocations
-    get_room_members
+    make_shell_context
 
 [html]
 directory = coverage_html
