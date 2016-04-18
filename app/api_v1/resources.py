@@ -100,7 +100,7 @@ class BucketListsApi(Resource):
             if args.get('limit'):
                 limit = int(args.get('limit'))
             if args.get('page'):
-                limit = int(args.get('page'))
+                page = int(args.get('page'))
             name = args.get('q')
             if name:
                 search_results = BucketList.query.\
@@ -115,10 +115,9 @@ class BucketListsApi(Resource):
             return jsonify({'message': 'Please provide a search parameter'})
 
         if limit and page:
-            print 'limit is', limit, 'page is', page
             bucketlists = BucketList.query.\
                 filter_by(created_by=g.user.id).paginate(
-                    page, limit, False).items
+                    page=page, per_page=limit, error_out=False).items
         else:
             bucketlists = BucketList.query.filter_by(
                 created_by=g.user.id).all()
