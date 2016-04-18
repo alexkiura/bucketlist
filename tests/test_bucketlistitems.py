@@ -34,10 +34,7 @@ class TestBucketListItems(ApiTestCase):
         data = {'item_name': 'travel to Canada', 'priority': 'High'}
         resp = self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
                              headers=self.get_header())
-        self.assert200(resp)
-        self.assertEqual(json.loads(resp.data),
-                         {'message': 'successfully created item.',
-                          'item_name': data['item_name']})
+        self.assertIn(data['item_name'], resp.data)
 
     def test_get_bucketlistitems(self):
         """Test retrieveing all bucketlist items."""
