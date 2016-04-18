@@ -13,14 +13,14 @@ class TestUserAuth(ApiTestCase):
         result = self.app.post('/api/v1.0/auth/register/', data=self.user)
         self.assertEqual(result.status_code, 200)
         resp_data = json.loads(result.data)
-        self.assertTrue('authorization' in resp_data)
+        self.assertTrue('Authorization' in resp_data)
 
     def test_user_login(self):
         """Test user login."""
         self.user = {'username': 'alex', 'password': 'foobar'}
         result = self.app.post('/api/v1.0/auth/login/', data=self.user)
         resp_data = json.loads(result.data)
-        self.assertTrue('authorization' in resp_data)
+        self.assertTrue('Authorization' in resp_data)
 
     def test_incorrect_login(self):
         """Test incorrect credentials."""

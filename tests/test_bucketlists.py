@@ -16,8 +16,8 @@ class TestBucketLists(ApiTestCase):
         user = {'username': 'alex', 'password': 'foobar'}
         resp_login = self.app.post('/api/v1.0/auth/login/', data=user)
         result = json.loads(resp_login.data)
-        token = result.get('authorization').encode('ascii')
-        return {'authorization': token}
+        token = result.get('Authorization').encode('ascii')
+        return {'Authorization': token}
 
     def test_post_bucketlist(self):
         """Test creating a new bucketlist."""
