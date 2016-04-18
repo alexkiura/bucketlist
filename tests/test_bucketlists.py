@@ -40,8 +40,7 @@ class TestBucketLists(ApiTestCase):
         resp_bucketlist = self.app.get('/api/v1.0/bucketlists/',
                                        headers=self.get_header())
         self.assertEqual(resp_bucketlist.status_code, 200)
-        result = json.loads(resp_bucketlist.data)[0]
-        print result
+        result = json.loads(resp_bucketlist.data)['bucketlists'][0]
         self.assertEqual(result.get('list_name'), 'Drinks')
 
     def test_put_bucketlist(self):
