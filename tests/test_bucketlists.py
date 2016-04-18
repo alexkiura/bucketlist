@@ -40,7 +40,7 @@ class TestBucketLists(ApiTestCase):
         resp_bucketlist = self.app.get('/api/v1.0/bucketlists/',
                                        headers=self.get_header())
         self.assertEqual(resp_bucketlist.status_code, 200)
-        result = json.loads(resp_bucketlist.data)['bucketlists'][0]
+        result = json.loads(resp_bucketlist.data)[0]
         print result
         self.assertEqual(result.get('list_name'), 'Drinks')
 
@@ -70,7 +70,7 @@ class TestBucketLists(ApiTestCase):
                               headers=self.get_header())
         resp_bucketlist = self.app.get('/api/v1.0/bucketlists/?limit=5',
                                        headers=self.get_header())
-        results = json.loads(resp_bucketlist.data)['bucketlists']
+        results = json.loads(resp_bucketlist.data)
         print results
         self.assertEqual(len(results), 5)
 
@@ -83,7 +83,7 @@ class TestBucketLists(ApiTestCase):
                               headers=self.get_header())
         resp_bucketlist = self.app.get('/api/v1.0/bucketlists/?q=Foods\n',
                                        headers=self.get_header())
-        results = json.loads(resp_bucketlist.data)['bucketlists']
+        results = json.loads(resp_bucketlist.data)
         self.assertEqual(len(results), 1)
 
     def test_single_bucketlist(self):

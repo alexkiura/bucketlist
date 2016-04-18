@@ -107,9 +107,7 @@ class BucketListsApi(Resource):
                     filter_by(created_by=g.user.id, list_name=name).\
                     paginate(page, limit, False).items
                 if search_results:
-                    return jsonify({'bucketlists':
-                                    marshal(search_results,
-                                            bucketlist_serializer)})
+                    return marshal(search_results, bucketlist_serializer)
                 else:
                     return jsonify({'message':
                                     'Bucketlist ' + name + ' doesn\'t exist.'})
@@ -124,8 +122,7 @@ class BucketListsApi(Resource):
         else:
             bucketlists = BucketList.query.filter_by(
                 created_by=g.user.id).all()
-        return {'bucketlists': marshal(bucketlists,
-                                       bucketlist_serializer)}
+        return marshal(bucketlists, bucketlist_serializer)
 
     @auth.login_required
     def post(self):
@@ -169,10 +166,11 @@ class BucketListApi(Resource):
         Returns:
             json: The bucketlist with the id.
         """
+
         bucketlist = BucketList.query.filter_by(created_by=g.user.id,
                                                 id=id).first()
         if bucketlist:
-            return {'bucketlist': marshal(bucketlist, bucketlist_serializer)}
+            return marshal(bucketlist, bucketlist_serializer)
         else:
             return jsonify({'message': 'the bucketlist was not found.'})
 
@@ -261,8 +259,7 @@ class BucketListItemsApi(Resource):
         else:
             bucketlistitems = BucketListItem.\
                 query.filter_by(bucketlist_id=id).all()
-        return jsonify({'items':
-                       marshal(bucketlistitems, bucketlistitem_serializer)})
+        return marshal(bucketlistitems, bucketlistitem_serializer)
 
     @auth.login_required
     def post(self, id):
@@ -437,14 +434,3 @@ class UserRegister(Resource):
         user = User(username=username, password=password)
         return post_item(field_name='username', item=user, is_user=True,
                          serializer=None)
-        # try:
-        #     db.session.add(user)
-        #     db.session.commit()
-        #     token = user.generate_auth_token()
-        #     return jsonify({'Authorization': token.decode('ascii')})
-        #
-        # except IntegrityError:
-        #     db.session.rollback()
-        #     return {'code': 400,
-        #             'field': 'username',
-        #             'error': 'A user with the given username already exists.'}

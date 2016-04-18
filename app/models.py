@@ -123,10 +123,8 @@ class User(db.Model):
         token_serializer = Serializer(config['SECRET_KEY'])
         try:
             data = token_serializer.loads(token)
-        except SignatureExpired:
-            return None
-        except BadSignature:
-            return None
+        except (SignatureExpired, BadSignature):
+            return {'error': 'The token is not valid'}
         user = User.query.get(data['id'])
         return user
 
