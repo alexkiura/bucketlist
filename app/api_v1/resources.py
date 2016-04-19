@@ -41,6 +41,21 @@ def post_item(**kwargs):
                 'error': 'The ' + kwargs['field_name'] + ' already exists'}
 
 
+def delete_item(item, name):
+    """
+    Delete an item from the database.
+
+    Args:
+        item: The item to be deleted.
+    """
+    if item:
+        delete_item(bucketlistitem)
+        return jsonify({'message':
+                        'successfully deleted bucketlistitem'})
+    else:
+        return jsonify({'message': 'the delete was unsuccessful.'})
+
+
 @auth.verify_password
 def verify_password(token, password):
     """
@@ -238,8 +253,7 @@ class BucketListApi(Resource):
         bucketlist = BucketList.query.filter_by(created_by=g.user.id,
                                                 id=id).first()
         if bucketlist:
-            db.session.delete(bucketlist)
-            db.session.commit()
+            delete_item(bucketlist)
             return jsonify({'message': 'successfully deleted bucketlist'})
         else:
             return jsonify({'message': 'the delete was unsuccessful.'})
@@ -376,8 +390,7 @@ class BucketListItemApi(Resource):
         bucketlistitem = BucketListItem. \
             query.filter_by(bucketlist_id=id, item_id=item_id).first()
         if bucketlistitem:
-            db.session.delete(bucketlistitem)
-            db.session.commit()
+            delete_item(bucketlistitem)
             return jsonify({'message':
                             'successfully deleted bucketlistitem'})
         else:
