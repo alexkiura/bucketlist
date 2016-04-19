@@ -49,9 +49,10 @@ def delete_item(item, name):
         item: The item to be deleted.
     """
     if item:
-        delete_item(bucketlistitem)
+        db.session.delete(item)
+        db.session.commit()
         return jsonify({'message':
-                        'successfully deleted bucketlistitem'})
+                        'successfully deleted ' + name})
     else:
         return jsonify({'message': 'the delete was unsuccessful.'})
 
@@ -253,8 +254,7 @@ class BucketListApi(Resource):
         bucketlist = BucketList.query.filter_by(created_by=g.user.id,
                                                 id=id).first()
         if bucketlist:
-            delete_item(bucketlist)
-            return jsonify({'message': 'successfully deleted bucketlist'})
+            return delete_item(bucketlist, bucketlist.list_name)
         else:
             return jsonify({'message': 'the delete was unsuccessful.'})
 
@@ -390,11 +390,7 @@ class BucketListItemApi(Resource):
         bucketlistitem = BucketListItem. \
             query.filter_by(bucketlist_id=id, item_id=item_id).first()
         if bucketlistitem:
-            delete_item(bucketlistitem)
-            return jsonify({'message':
-                            'successfully deleted bucketlistitem'})
-        else:
-            return jsonify({'message': 'the delete was unsuccessful.'})
+            delete_item(bucketlistitem, bucketlistitem.item_name)
 
 
 class UserLogin(Resource):
