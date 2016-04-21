@@ -81,8 +81,7 @@ class TestBucketListItems(ApiTestCase):
                               data={'item_name': item_name,
                                     'priority': 'High'},
                               headers=self.get_header())
-        resp = self.app.get('/api/v1.0/bucketlists/1/items/?limit=4',
+        resp = self.app.get('/api/v1.0/bucketlists/1/items/?limit=4&page=1',
                             headers=self.get_header())
         results = json.loads(resp.data)
-        print results
         self.assertEqual(len(results), 4)

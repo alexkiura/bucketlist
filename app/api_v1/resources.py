@@ -112,46 +112,38 @@ class BucketListsApi(Resource):
             json: A list of bucketlists created by the user.
         """
         args = request.args.to_dict()
-        limit, page = 10, 1
-        if args:
-            if args.get('limit'):
-                limit = int(args.get('limit'))
-            if args.get('page'):
-                page = int(args.get('page'))
-            name = args.get('q')
-            if name:
-                search_results = BucketList.query.\
-                    filter_by(created_by=g.user.id, list_name=name).\
-                    paginate(page, limit, False).items
-                if search_results:
-                    return marshal(search_results, bucketlist_serializer)
-                else:
-                    return jsonify({'message':
-                                    'Bucketlist ' + name + ' doesn\'t exist.'})
+        limit = int(args.get('limit', 10))
+        page = int(args.get('page', 1))
+        name = args.get('q')
+        if name:
+            search_results = BucketList.query.\
+                filter_by(created_by=g.user.id, list_name=name).\
+                paginate(page, limit, False).items
+            if search_results:
+                return marshal(search_results, bucketlist_serializer)
+            else:
+                return jsonify({'message':
+                                'Bucketlist ' + name + ' doesn\'t exist.'})
         if args.keys().__contains__('q'):
             return jsonify({'message': 'Please provide a search parameter'})
 
-        if limit and page:
-            bucketlists_page = BucketList.query.\
-                filter_by(created_by=g.user.id).paginate(
-                    page=page, per_page=limit, error_out=False)
-            total = bucketlists_page.pages
-            has_next = bucketlists_page.has_next
-            has_previous = bucketlists_page.has_prev
-            if has_next:
-                next_page = str(request.url_root) + 'api/v1.0/bucketlists?' + \
-                    'limit=' + str(limit) + '&page=' + str(page + 1)
-            else:
-                next_page = 'None'
-            if has_previous:
-                previous_page = request.url_root + 'api/v1.0/bucketlists?' + \
-                    'limit=' + str(limit) + '&page=' + str(page - 1)
-            else:
-                previous_page = 'None'
-            bucketlists = bucketlists_page.items
+        bucketlists_page = BucketList.query.\
+            filter_by(created_by=g.user.id).paginate(
+                page=page, per_page=limit, error_out=False)
+        total = bucketlists_page.pages
+        has_next = bucketlists_page.has_next
+        has_previous = bucketlists_page.has_prev
+        if has_next:
+            next_page = str(request.url_root) + 'api/v1.0/bucketlists?' + \
+                'limit=' + str(limit) + '&page=' + str(page + 1)
         else:
-            bucketlists = BucketList.query.filter_by(
-                created_by=g.user.id).all()
+            next_page = 'None'
+        if has_previous:
+            previous_page = request.url_root + 'api/v1.0/bucketlists?' + \
+                'limit=' + str(limit) + '&page=' + str(page - 1)
+        else:
+            previous_page = 'None'
+        bucketlists = bucketlists_page.items
 
         resp = {'bucketlists': marshal(bucketlists, bucketlist_serializer),
                 'has_next': has_next,
@@ -280,17 +272,13 @@ class BucketListItemsApi(Resource):
         Returns:
             json: response with bucketlist items.
         """
-        limit, page = 10, 1
         args = request.args.to_dict()
-        if args:
-            if args.get('limit'):
-                limit = int(args.get('limit'))
-            if args.get('page'):
-                page = int(args.get('page'))
-            if limit and page:
-                bucketlistitems = BucketListItem.\
-                    query.filter_by(bucketlist_id=id).\
-                    paginate(page, limit, False).items
+        limit = int(args.get('limit', 0))
+        page = int(args.get('page', 0))
+        if limit and page:
+            bucketlistitems = BucketListItem.\
+                query.filter_by(bucketlist_id=id).\
+                paginate(page, limit, False).items
         else:
             bucketlistitems = BucketListItem.\
                 query.filter_by(bucketlist_id=id).all()
