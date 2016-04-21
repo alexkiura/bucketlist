@@ -70,7 +70,6 @@ class TestBucketLists(ApiTestCase):
         resp_bucketlist = self.app.get('/api/v1.0/bucketlists/?limit=5',
                                        headers=self.get_header())
         results = json.loads(resp_bucketlist.data)
-        print results
         self.assertEqual(len(results), 5)
 
     def test_bucketlist_search(self):

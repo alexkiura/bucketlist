@@ -28,9 +28,7 @@ class ApiTestCase(TestCase):
     def test_index_route(self):
         """Test /api/v1.0/."""
         result = self.app.get('/api/v1.0/')
-        print result.data
         result = json.loads(result.data)
-        print result
         self.assertEqual(result, {'Message': 'Welcome to my api'})
 
     def tearDown(self):
