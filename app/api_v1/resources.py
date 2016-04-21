@@ -343,24 +343,37 @@ class BucketListItemApi(Resource):
         Returns:
             json: A response with a success message.
         """
-        bucketlistitem = BucketListItem. \
-            query.filter_by(bucketlist_id=id, item_id=item_id).first()
-        parser = reqparse.RequestParser()
-        parser.add_argument('item_name')
-        parser.add_argument('priority')
-        parser.add_argument('done')
-        args = parser.parse_args()
-        item_name = args['item_name']
-        priority = args['priority']
-        done = args['done']
-        if item_name or priority or done:
-            bucketlistitem.item_name = item_name
-            bucketlistitem.priority = priority
-            bucketlistitem.done = done
-        db.session.add(bucketlistitem)
-        db.session.commit()
-        return jsonify({'Message': 'Successfully updated item.',
-                        'item_name': bucketlistitem.item_name})
+        try:
+            bucketlistitem = BucketListItem. \
+                query.filter_by(bucketlist_id=id, item_id=item_id).first()
+            parser = reqparse.RequestParser()
+            parser.add_argument('item_name')
+            parser.add_argument('priority')
+            parser.add_argument('done')
+            args = parser.parse_args()
+            print 'args is:', args
+            item_name = args['item_name']
+            priority = args['priority']
+            done = args['done']
+            if item_name:
+                bucketlistitem.item_name = item_name
+            if priority:
+                bucketlistitem.priority = priority
+            if done:
+                if str(done).lower() == 'true':
+                    done = True
+                else:
+                    done = False
+                bucketlistitem.done = done
+            else:
+                return {'Message': 'No fields were changed.'}
+
+            db.session.add(bucketlistitem)
+            db.session.commit()
+            return jsonify({'Message': 'Successfully updated item.',
+                            'item_name': bucketlistitem.item_name})
+        except AttributeError:
+            return {'Message': 'No item matching the given id was found.'}
 
     @auth.login_required
     def delete(self, id, item_id):

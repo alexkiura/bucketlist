@@ -53,7 +53,8 @@ class TestBucketListItems(ApiTestCase):
         data = {'item_name': 'travel to Columbia', 'priority': 'Medium'}
         self.app.post('/api/v1.0/bucketlists/1/items/', data=data,
                       headers=self.get_header())
-        data['item_name'] = 'Travel to Kenya'
+        data['item_name'] = 'Travel to Liberia'
+        data['done'] = False
         resp = self.app.put('/api/v1.0/bucketlists/1/items/1/',
                             data=data,
                             headers=self.get_header())
