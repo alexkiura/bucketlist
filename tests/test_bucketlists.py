@@ -102,4 +102,4 @@ class TestBucketLists(ApiTestCase):
         resp_bucketlist = self.app.get('/api/v1.0/bucketlists/100/',
                                        headers=self.get_header())
         self.assertEqual(json.loads(resp_bucketlist.data),
-                         {'message': 'the bucketlist was not found.'})
+                         {'Message': 'the bucketlist was not found.'})

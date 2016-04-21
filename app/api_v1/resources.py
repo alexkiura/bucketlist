@@ -51,10 +51,10 @@ def delete_item(item, name):
     if item:
         db.session.delete(item)
         db.session.commit()
-        return jsonify({'message':
-                        'successfully deleted ' + name})
+        return jsonify({'Message':
+                        'Successfully deleted ' + name})
     else:
-        return jsonify({'message': 'the delete was unsuccessful.'})
+        return jsonify({'Message': 'The delete was unsuccessful.'})
 
 
 @auth.verify_password
@@ -122,10 +122,10 @@ class BucketListsApi(Resource):
             if search_results:
                 return marshal(search_results, bucketlist_serializer)
             else:
-                return jsonify({'message':
+                return jsonify({'Message':
                                 'Bucketlist ' + name + ' doesn\'t exist.'})
         if args.keys().__contains__('q'):
-            return jsonify({'message': 'Please provide a search parameter'})
+            return jsonify({'Message': 'Please provide a search parameter'})
 
         bucketlists_page = BucketList.query.\
             filter_by(created_by=g.user.id).paginate(
@@ -201,7 +201,7 @@ class BucketListApi(Resource):
         if bucketlist:
             return marshal(bucketlist, bucketlist_serializer)
         else:
-            return jsonify({'message': 'the bucketlist was not found.'})
+            return jsonify({'Message': 'the bucketlist was not found.'})
 
     @auth.login_required
     def put(self, id):
@@ -225,10 +225,10 @@ class BucketListApi(Resource):
             bucketlist.list_name = new_list_name
             db.session.add(bucketlist)
             db.session.commit()
-            return jsonify({'message': 'success',
+            return jsonify({'Message': 'success',
                             'list_name': bucketlist.list_name})
         else:
-            return jsonify({'message': 'Failure. Please provide a name for the'
+            return jsonify({'Message': 'Failure. Please provide a name for the'
                             'bucketlist'})
 
     @auth.login_required
@@ -247,7 +247,7 @@ class BucketListApi(Resource):
         if bucketlist:
             return delete_item(bucketlist, bucketlist.list_name)
         else:
-            return jsonify({'message': 'the delete was unsuccessful.'})
+            return jsonify({'Message': 'The delete was unsuccessful.'})
 
 
 class BucketListItemsApi(Resource):
@@ -359,7 +359,7 @@ class BucketListItemApi(Resource):
             bucketlistitem.done = done
         db.session.add(bucketlistitem)
         db.session.commit()
-        return jsonify({'message': 'successfully updated item.',
+        return jsonify({'Message': 'Successfully updated item.',
                         'item_name': bucketlistitem.item_name})
 
     @auth.login_required
@@ -410,13 +410,13 @@ class UserLogin(Resource):
         if username and password:
             user = User.query.filter_by(username=username).first()
         else:
-            return jsonify({'message':
+            return jsonify({'Message':
                             'Please provide a username and password'})
         if user and user.verify(password):
             token = user.generate_auth_token()
             return jsonify({'Authorization': token.decode('ascii')})
         else:
-            return jsonify({'message':
+            return jsonify({'Message':
                             'The username or password was invalid.'
                             'Please try again'})
 

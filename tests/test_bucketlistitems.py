@@ -60,7 +60,7 @@ class TestBucketListItems(ApiTestCase):
         self.assert200(resp)
         self.assertEqual(json.loads(resp.data),
                          {'item_name': data['item_name'],
-                          'message': 'successfully updated item.'})
+                          'Message': 'Successfully updated item.'})
 
     def test_delete_bucketlistitem(self):
         """Test deleting a bucketlist item."""
