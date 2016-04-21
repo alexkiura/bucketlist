@@ -8,7 +8,7 @@
 
 ## What is it?
 
-An API  written in `FLask` to help a user manage a personal [bucketlist](http://www.urbandictionary.com/define.php?term=bucket%20list)
+An API  written in **FLask** to help a user manage a personal [bucketlist](http://www.urbandictionary.com/define.php?term=bucket%20list)
 
 ## The Latest Version
 This API is currently at Version 1.0 (the first version).
