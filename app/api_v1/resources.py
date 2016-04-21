@@ -138,7 +138,6 @@ class BucketListsApi(Resource):
             total = bucketlists_page.pages
             has_next = bucketlists_page.has_next
             has_previous = bucketlists_page.has_prev
-            # import ipdb; ipdb.set_trace()
             if has_next:
                 next_page = str(request.url_root) + 'api/v1.0/bucketlists?' + \
                     'limit=' + str(limit) + '&page=' + str(page + 1)

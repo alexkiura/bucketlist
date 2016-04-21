@@ -3,7 +3,6 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from config.config import config
-# import ipdb; ipdb.set_trace()
 
 db = SQLAlchemy()
 
