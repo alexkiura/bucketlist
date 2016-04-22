@@ -62,11 +62,12 @@ class TestBucketLists(ApiTestCase):
 
     def test_bucketlist_pagination(self):
         """Test pagination."""
-        with open('tests/list_names.in', 'r') as f:
-            for list_name in f.readlines():
-                self.app.post('/api/v1.0/bucketlists/',
-                              data={'list_name': list_name},
-                              headers=self.get_header())
+        with open('tests/bucketlists.json', 'r') as file:
+            bucketlists = json.loads(file.read())
+        for bucketlist in bucketlists:
+            self.app.post('/api/v1.0/bucketlists/',
+                          data={'list_name': bucketlist['list_name']},
+                          headers=self.get_header())
         resp_bucketlist = self.app.get('/api/v1.0/bucketlists/?limit=5',
                                        headers=self.get_header())
         results = json.loads(resp_bucketlist.data)
@@ -74,10 +75,11 @@ class TestBucketLists(ApiTestCase):
 
     def test_bucketlist_search(self):
         """Test search bucketlists by name."""
-        with open('tests/list_names.in', 'r') as f:
-            for list_name in f.readlines():
+        with open('tests/bucketlists.json', 'r') as file:
+            bucketlists = json.loads(file.read())
+            for bucketlist in bucketlists:
                 self.app.post('/api/v1.0/bucketlists/',
-                              data={'list_name': list_name},
+                              data={'list_name': bucketlist['list_name']},
                               headers=self.get_header())
         resp_bucketlist = self.app.get('/api/v1.0/bucketlists/?q=Foods\n',
                                        headers=self.get_header())
@@ -102,3 +104,8 @@ class TestBucketLists(ApiTestCase):
                                        headers=self.get_header())
         self.assertEqual(json.loads(resp_bucketlist.data),
                          {'Message': 'the bucketlist was not found.'})
+
+    def test_unauthorized_access(self):
+        """Test unauthorised access."""
+        resp = self.app.get('/api/v1.0/bucketlists/')
+        self.assert401(resp)

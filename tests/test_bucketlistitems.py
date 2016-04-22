@@ -76,8 +76,9 @@ class TestBucketListItems(ApiTestCase):
     def test_bucketlistitem_pagination(self):
         """Test pagination and limiting results."""
         self.add_bucketlist()
-        with open('tests/item_names.in', 'r') as f:
-            for item_name in f.readlines():
+        with open('tests/bucketlists.json', 'r') as file:
+            bucketlist = json.loads(file.read())[0]
+            for item_name in bucketlist['items']:
                 self.app.post('/api/v1.0/bucketlists/1/items/',
                               data={'item_name': item_name,
                                     'priority': 'High'},
@@ -86,3 +87,8 @@ class TestBucketListItems(ApiTestCase):
                             headers=self.get_header())
         results = json.loads(resp.data)
         self.assertEqual(len(results), 4)
+
+    def test_unauthorized_access(self):
+        """Test unauthorised access."""
+        resp = self.app.get('/api/v1.0/bucketlists/1/items/')
+        self.assert401(resp)
