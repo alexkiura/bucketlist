@@ -122,8 +122,8 @@ class BucketListsApi(Resource):
             if search_results:
                 return marshal(search_results, bucketlist_serializer)
             else:
-                return jsonify({'Message':
-                                'Bucketlist ' + name + ' doesn\'t exist.'})
+                return {'Message':
+                        'Bucketlist ' + name + ' doesn\'t exist.'}, 404
         if args.keys().__contains__('q'):
             return jsonify({'Message': 'Please provide a search parameter'})
 
@@ -201,7 +201,7 @@ class BucketListApi(Resource):
         if bucketlist:
             return marshal(bucketlist, bucketlist_serializer)
         else:
-            return jsonify({'Message': 'the bucketlist was not found.'})
+            return {'Message': 'the bucketlist was not found.'}, 404
 
     @auth.login_required
     def put(self, id):

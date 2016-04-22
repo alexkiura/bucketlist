@@ -105,7 +105,24 @@ class TestBucketLists(ApiTestCase):
         self.assertEqual(json.loads(resp_bucketlist.data),
                          {'Message': 'the bucketlist was not found.'})
 
-    def test_unauthorized_access(self):
+    def test_unauthenticated_access(self):
         """Test unauthorised access."""
         resp = self.app.get('/api/v1.0/bucketlists/')
         self.assert401(resp)
+
+    def test_unauthorized_access(self):
+        """Test a user accessing another user's bucketlist."""
+        # create  a test user janex
+        user = {'username': 'janet', 'password': 'foobar'}
+        resp_register = self.app.post('/api/v1.0/auth/register/', data=user)
+        result = json.loads(resp_register.data)
+        token_janet = result.get('Authorization').encode('ascii')
+        # Add a bucketlist under user alex
+        data = {'list_name': 'Cooking.'}
+        self.app.post('/api/v1.0/bucketlists/',
+                      data=data, headers=self.get_header())
+        # Try to access alex's bucketlist while logged in as janex
+        resp_bucketlist = self.app.get('/api/v1.0/bucketlists/1/',
+                                       headers={'Authorization': token_janet})
+        self.assertEqual(json.loads(resp_bucketlist.data),
+                         {'Message': 'the bucketlist was not found.'})
