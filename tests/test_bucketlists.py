@@ -126,3 +126,4 @@ class TestBucketLists(ApiTestCase):
                                        headers={'Authorization': token_janet})
         self.assertEqual(json.loads(resp_bucketlist.data),
                          {'Message': 'the bucketlist was not found.'})
+        self.assert404(resp_bucketlist)
