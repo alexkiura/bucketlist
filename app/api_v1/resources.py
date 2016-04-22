@@ -351,7 +351,6 @@ class BucketListItemApi(Resource):
             parser.add_argument('priority')
             parser.add_argument('done')
             args = parser.parse_args()
-            print 'args is:', args
             item_name = args['item_name']
             priority = args['priority']
             done = args['done']
