@@ -1,0 +1,15 @@
+[report]
+omit=
+    */python?.?/*
+    *site-packages/*
+    *site-packages/nose/*
+    *docopt.py*
+    *docopt*
+    *__init__*
+    *tests/*
+
+exclude_lines =
+    make_shell_context
+
+[html]
+directory = coverage_html

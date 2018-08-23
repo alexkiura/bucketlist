@@ -1,0 +1,38 @@
+[
+	{
+		"list_name": "Places to travel",
+    "items": [
+      "Travel to India",
+      "Travel to Mombasa",
+      "Travel to Amsterdam",
+      "Travel to Kisii",
+      "Travel to San Fransisco",
+      "Travel to LA",
+      "Travel to Miami"
+  ]
+	},
+  {
+		"list_name": "Foods"
+	},
+  {
+		"list_name": "Phones to buy"
+	},
+  {
+		"list_name": "Cities to live in"
+	},
+  {
+		"list_name": "Tablets to make"
+	},
+  {
+		"list_name": "Apps to make"
+	},
+  {
+		"list_name": "Drones to fly"
+	},
+  {
+		"list_name": "Planes to fly"
+	},
+  {
+		"list_name": "Apis to consume"
+	}
+]
